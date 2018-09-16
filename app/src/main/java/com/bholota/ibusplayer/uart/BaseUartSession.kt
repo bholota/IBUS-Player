@@ -37,6 +37,11 @@ class BaseUartSession(val dataListener: (ByteArray) -> Unit) : UartSession {
     override fun openDevice(deviceName: String) {
         uartDevice = try {
             PeripheralManager.getInstance().openUartDevice(deviceName).apply {
+                log.d("Connected to: $deviceName")
+                setBaudrate(UartConfig.BAUD_RATE)
+                setDataSize(UartConfig.DATA_BITS)
+                setParity(UartConfig.PARITY)
+                setStopBits(UartConfig.STOP_BITS)
                 registerUartDeviceCallback(uartDataCallback)
             }
         } catch (e: IOException) {
@@ -62,12 +67,15 @@ class BaseUartSession(val dataListener: (ByteArray) -> Unit) : UartSession {
 
     override fun readData(): ByteArray {
         uartDevice?.apply {
-            val buffer = ByteArray(maxReadSize)
-            var count: Int = read(buffer, buffer.size)
-            while (count > 0) {
+            val buffer = ByteArray(UartConfig.CHUNK_SIZE)
+            val result = ArrayList<Byte>()
+            var count: Int
+            while (true) {
                 count = read(buffer, buffer.size)
+                if (count == 0) break
+                result.addAll(buffer.copyOfRange(0, count).toList())
             }
-            return buffer
+            return result.toByteArray()
         }
         return ByteArray(0)
     }

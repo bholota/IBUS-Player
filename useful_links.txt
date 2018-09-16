@@ -31,5 +31,7 @@ http://web.comhem.se/mulle2/IBUSInsideDRAFTREV5.pdf
     5. Samsung S8
     6. TODO: Custom circuit with battery that shuts down/starts AoT device with car
 
+OSX:
+script -a -t 0 out.bin screen /dev/cu.SLAB_USBtoUART -f 9600,cs8,-parenb,-cstopb,-hupcl
 
 

@@ -5,6 +5,7 @@ import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bholota.ibusplayer.uart.BaseUartSession
+import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
 
 
@@ -20,7 +21,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var logView: TextView
     var logText = StringBuffer()
     private var ibusUart = BaseUartSession { data ->
-        logText.append(data.joinToString { String.format("%02X ", it.toInt()) })
+        logText.append(data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) })
+        logText.append('\n')
         logView.text = logText.toString()
     }
 
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         logView = findViewById(R.id.log)
         logView.movementMethod = ScrollingMovementMethod()
-        ibusUart.openDevice(ibusUart.devicesList.first())
+        ibusUart.openDevice(UartConfig.DEVICE_NAME)
     }
 
     override fun onDestroy() {
