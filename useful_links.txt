@@ -1,0 +1,35 @@
+Blog post with similar project based on nodeJS:
+https://mono.software/2016/12/01/hacking-bmw-i-bus-with-raspberry-pi/
+
+IBUS reverse engineering
+http://web.comhem.se/mulle2/IBUSInsideDRAFTREV5.pdf
+
+
+--- At least every 3 seconds announce CD changer for MID
+
+--- IBUS packet structure:
+
+[SRC_ID][LEN][DEST_ID][DATA][XOR_CHECKSUM]
+
+-- SRC_ID   - source device id
+-- LEN      - packet length (without SRC_ID and LEN fields)
+-- DEST_ID  - destination device id
+-- DATA     - message
+-- CHECKSUM - xor checksum to compare with computed one and reject if different
+
+--- Checksum calculation
+    1. Set XOR_VAR to 0x0
+    2. For every message byte:
+        1. XOR_VAR = XOR_VAR xor message_byte
+    3. return XOR_VAR
+
+--- Hardware
+    1. NXP i.MX7D Starter Kit (I will try RBPI 3 later)
+    2. Reslers.de USB IBUS adapter (http://www.reslers.de/IBUS/)
+    3. 3.5mm jack to cd changer bmw connector (TODO: find schematics)
+    4. Car 12V to USB connector
+    5. Samsung S8
+    6. TODO: Custom circuit with battery that shuts down/starts AoT device with car
+
+
+
