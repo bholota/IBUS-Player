@@ -10,7 +10,6 @@ class BaseUartSession(val dataListener: (ByteArray) -> Unit) : UartSession {
 
     private val log = L("BaseUartSession")
     private var uartDevice: UartDevice? = null
-    private val maxReadSize = 64
 
     private val uartDataCallback = object: UartDeviceCallback {
 
@@ -46,6 +45,7 @@ class BaseUartSession(val dataListener: (ByteArray) -> Unit) : UartSession {
             }
         } catch (e: IOException) {
             log.w("Unable to open UART device", e)
+            log.w("Available devices: $devicesList")
             null
         }
     }
