@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.bholota.ibusplayer.uart.BaseUartSession
+import com.bholota.ibusplayer.ibus.IBusParser
+import com.bholota.ibusplayer.uart.MockedUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
 
@@ -18,21 +19,34 @@ import com.bholota.ibusplayer.utils.L
  */
 class MainActivity : AppCompatActivity() {
 
-    lateinit var logView: TextView
-    var logText = StringBuffer()
-    private var ibusUart = BaseUartSession { data ->
-        logText.append(data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) })
-        logText.append('\n')
-        logView.text = logText.toString()
-    }
-
     private val log = L("MainActivity")
+    lateinit var logsView: TextView
+    lateinit var packetView: TextView
+
+    var logText = StringBuffer()
+    val parser = IBusParser()
+
+    private var ibusUart = MockedUartConnection { data ->
+        val packetString = data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) }
+        log.w("Packet: $packetString")
+
+        logText.append(packetString)
+        logText.append('\n')
+        logsView.text = logText.toString()
+
+        // parse
+        parser.push(data)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        logView = findViewById(R.id.log)
-        logView.movementMethod = ScrollingMovementMethod()
+
+        logsView = findViewById(R.id.logs)
+        logsView.movementMethod = ScrollingMovementMethod()
+        packetView = findViewById(R.id.packets)
+        packetView.movementMethod = ScrollingMovementMethod()
+
         ibusUart.openDevice(UartConfig.DEVICE_NAME)
     }
 

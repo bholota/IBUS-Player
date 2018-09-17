@@ -6,9 +6,9 @@ import com.google.android.things.pio.UartDevice
 import com.google.android.things.pio.UartDeviceCallback
 import java.io.IOException
 
-class BaseUartSession(val dataListener: (ByteArray) -> Unit) : UartSession {
+class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartConnection {
 
-    private val log = L("BaseUartSession")
+    private val log = L("BaseUartConnection")
     private var uartDevice: UartDevice? = null
 
     private val uartDataCallback = object: UartDeviceCallback {

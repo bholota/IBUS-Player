@@ -1,8 +1,10 @@
 package com.bholota.ibusplayer.uart
 
-interface UartSession {
+interface UartConnection {
 
     val devicesList: List<String>
+
+    val dataListener: (ByteArray) -> Unit
 
     fun openDevice(deviceName: String)
 
