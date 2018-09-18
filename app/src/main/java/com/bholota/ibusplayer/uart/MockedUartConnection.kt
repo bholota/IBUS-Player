@@ -1,6 +1,5 @@
 package com.bholota.ibusplayer.uart
 
-import android.os.Handler
 import com.bholota.ibus.IBusDebugData
 
 class MockedUartConnection(override val dataListener: (ByteArray) -> Unit) : UartConnection {
@@ -13,8 +12,6 @@ class MockedUartConnection(override val dataListener: (ByteArray) -> Unit) : Uar
 
     private var position = 0
 
-    private var handler = Handler()
-
     private val packets = IBusDebugData.packets
 
     override fun openDevice(deviceName: String) {
@@ -22,7 +19,7 @@ class MockedUartConnection(override val dataListener: (ByteArray) -> Unit) : Uar
             try {
                 while (true) {
                     val frame = packets[position % packets.size]
-                    handler.post { dataListener(frame.map { (it and 0xFF).toByte() }.toByteArray()) }
+                    dataListener(frame.map { (it and 0xFF).toByte() }.toByteArray())
                     Thread.sleep(1000)
                     position++
                 }

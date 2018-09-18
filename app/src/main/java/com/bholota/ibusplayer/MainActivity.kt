@@ -24,18 +24,26 @@ class MainActivity : AppCompatActivity() {
     lateinit var packetView: TextView
 
     var logText = StringBuffer()
+    var packetText = StringBuffer()
     val parser = IBusParser()
 
     private var ibusUart = MockedUartConnection { data ->
+
         val packetString = data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) }
         log.w("Packet: $packetString")
-
         logText.append(packetString)
         logText.append('\n')
-        logsView.text = logText.toString()
 
+        runOnUiThread {
+            logsView.text = logText.toString()
+        }
         // parse
-        parser.push(data)
+        val packets = parser.push(data)
+        packets.forEach { packetText.append(it).append('\n') }
+
+        runOnUiThread {
+            packetView.text = packetText.toString()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

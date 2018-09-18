@@ -5,13 +5,19 @@ import com.google.android.things.pio.PeripheralManager
 import com.google.android.things.pio.UartDevice
 import com.google.android.things.pio.UartDeviceCallback
 import java.io.IOException
+import java.util.*
+import kotlin.concurrent.thread
 
 class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartConnection {
 
     private val log = L("BaseUartConnection")
+    private var lastReadTime = 0L
     private var uartDevice: UartDevice? = null
+    private var writerQueue = ArrayList<ByteArray>()
 
-    private val uartDataCallback = object: UartDeviceCallback {
+    private lateinit var writerThread: Thread
+
+    private val uartDataCallback = object : UartDeviceCallback {
 
         override fun onUartDeviceError(uart: UartDevice?, error: Int) {
             log.w("Error event $error")
@@ -34,6 +40,8 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
         }
 
     override fun openDevice(deviceName: String) {
+        // it could be synchronized with read()
+        writerThread = createWriterThread()
         uartDevice = try {
             PeripheralManager.getInstance().openUartDevice(deviceName).apply {
                 log.d("Connected to: $deviceName")
@@ -50,7 +58,32 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
         }
     }
 
+    private fun createWriterThread(): Thread = thread(start = true) {
+        val waitTime = 150L //ms
+        try {
+            while (true) {
+                val now = Date().time
+                if (now - lastReadTime < waitTime || writerQueue.isEmpty()) {
+                    Thread.sleep(waitTime)
+                    continue
+                }
+                synchronized(writerQueue) {
+                    val packet = writerQueue.first()
+                    val count = uartDevice?.run {
+                        write(packet, packet.size)
+                    }
+                    log.d("Wrote $count bytes")
+                    writerQueue.remove(packet)
+                }
+                Thread.sleep(waitTime)
+            }
+        } catch (_: InterruptedException) {
+            // do nothing
+        }
+    }
+
     override fun closeDevice() {
+        writerThread.interrupt()
         uartDevice?.unregisterUartDeviceCallback(uartDataCallback)
         uartDevice?.close()
         uartDevice = null
@@ -59,12 +92,12 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
     override fun isOpen() = uartDevice != null
 
     override fun writeData(data: ByteArray) {
-        val count = uartDevice?.run {
-            write(data, data.size)
+        synchronized(writerQueue) {
+            writerQueue.add(data)
         }
-        log.d("Wrote $count bytes")
     }
 
+    @Synchronized
     override fun readData(): ByteArray {
         uartDevice?.apply {
             val buffer = ByteArray(UartConfig.CHUNK_SIZE)
@@ -75,8 +108,10 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
                 if (count == 0) break
                 result.addAll(buffer.copyOfRange(0, count).toList())
             }
+            lastReadTime = Date().time
             return result.toByteArray()
         }
+        lastReadTime = Date().time
         return ByteArray(0)
     }
 }
