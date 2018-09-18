@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.bholota.ibusplayer.ibus.IBusParser
+import com.bholota.ibus.IBusParser
 import com.bholota.ibusplayer.uart.MockedUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
