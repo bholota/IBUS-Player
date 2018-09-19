@@ -5,7 +5,7 @@ import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bholota.ibus.IBusParser
-import com.bholota.ibusplayer.uart.MockedUartConnection
+import com.bholota.ibusplayer.uart.BaseUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
 
@@ -27,10 +27,10 @@ class MainActivity : AppCompatActivity() {
     var packetText = StringBuffer()
     val parser = IBusParser()
 
-    private var ibusUart = MockedUartConnection { data ->
+    private var ibusUart = BaseUartConnection { data ->
 
         val packetString = data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) }
-        log.w("Packet: $packetString")
+
         logText.append(packetString)
         logText.append('\n')
 
@@ -39,7 +39,10 @@ class MainActivity : AppCompatActivity() {
         }
         // parse
         val packets = parser.push(data)
-        packets.forEach { packetText.append(it).append('\n') }
+        packets.forEach {
+            log.w("<-- Packet: $it")
+            packetText.append(it).append('\n')
+        }
 
         runOnUiThread {
             packetView.text = packetText.toString()
@@ -56,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         packetView.movementMethod = ScrollingMovementMethod()
 
         ibusUart.openDevice(UartConfig.DEVICE_NAME)
+        ibusUart.writeData(byteArrayOf(0x18, 0x0, 0x18.toByte(), 0x1))
     }
 
     override fun onDestroy() {
