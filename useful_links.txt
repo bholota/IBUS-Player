@@ -6,6 +6,8 @@ http://web.comhem.se/mulle2/IBUSInsideDRAFTREV5.pdf
 
 https://medium.com/@zolotarev_k/elixir-nerves-for-controlling-your-car-part-1-3474afed4749
 
+http://web.comhem.se/bengt-olof.swing/IBus.htm
+
 
 --- At least every 3 seconds announce CD changer for MID
 
