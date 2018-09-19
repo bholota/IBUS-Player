@@ -4,6 +4,8 @@ https://mono.software/2016/12/01/hacking-bmw-i-bus-with-raspberry-pi/
 IBUS reverse engineering
 http://web.comhem.se/mulle2/IBUSInsideDRAFTREV5.pdf
 
+https://medium.com/@zolotarev_k/elixir-nerves-for-controlling-your-car-part-1-3474afed4749
+
 
 --- At least every 3 seconds announce CD changer for MID
 

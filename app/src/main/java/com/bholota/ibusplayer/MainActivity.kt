@@ -8,6 +8,7 @@ import com.bholota.ibus.IBusParser
 import com.bholota.ibusplayer.uart.BaseUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
+import kotlin.concurrent.thread
 
 
 /**
@@ -59,7 +60,13 @@ class MainActivity : AppCompatActivity() {
         packetView.movementMethod = ScrollingMovementMethod()
 
         ibusUart.openDevice(UartConfig.DEVICE_NAME)
-        ibusUart.writeData(byteArrayOf(0x18, 0x0, 0x18.toByte(), 0x1))
+
+        thread(start = true) {
+            for (i in 0..10) {
+                ibusUart.writeData(byteArrayOf(0x68, 0x05, 0x18, 0x38, 0x00, 0x00, 0x4D)) // register cd changer
+                Thread.sleep(2000)
+            }
+        }
     }
 
     override fun onDestroy() {
