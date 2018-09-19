@@ -63,7 +63,8 @@ class MainActivity : AppCompatActivity() {
 
         thread(start = true) {
             for (i in 0..10) {
-                ibusUart.writeData(byteArrayOf(0x68, 0x05, 0x18, 0x38, 0x00, 0x00, 0x4D)) // register cd changer
+//                ibusUart.writeData(byteArrayOf(0x68, 0x05, 0x18, 0x38, 0x00, 0x00, 0x4D)) // register cd changer
+                ibusUart.writeData(byteArrayOf(0x18, 0x04, 0xFF.toByte(), 0x02, 0x00, 0xE1.toByte())) // register cd changer
                 Thread.sleep(2000)
             }
         }
