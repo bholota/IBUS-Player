@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bholota.ibus.IBusDevice
+import com.bholota.ibus.IBusFrame
 import com.bholota.ibus.IBusParser
 import com.bholota.ibusplayer.uart.BaseUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
@@ -64,8 +66,9 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             for (i in 0..10) {
 //                ibusUart.writeData(byteArrayOf(0x68, 0x05, 0x18, 0x38, 0x00, 0x00, 0x4D)) // register cd changer
-                ibusUart.writeData(byteArrayOf(0x18, 0x04, 0xFF.toByte(), 0x02, 0x00, 0xE1.toByte())) // register cd changer
-                Thread.sleep(2000)
+//                ibusUart.writeData(byteArrayOf(0x18, 0x04, 0xFF.toByte(), 0x02, 0x00, 0xE1.toByte())) // register cd changer
+                ibusUart.writeData(IBusFrame(IBusDevice.CDPlayer, IBusDevice.BLOC, listOf(0x02, 0x0)).toByteArray())
+                Thread.sleep(1000)
             }
         }
     }

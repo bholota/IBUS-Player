@@ -19,6 +19,10 @@ class IBusFrame(val src: IBusDevice, val dst: IBusDevice, val data: List<Byte>) 
 
     fun toRaw(): RawFrame = RawFrame(src.code, len, dst.code, data, checkSum)
 
+    fun toByteArray(): ByteArray {
+        return byteArrayOf(src.code, len, dst.code, *data.toByteArray(), checkSum)
+    }
+
     companion object {
         fun fromRaw(rawFrame: RawFrame): IBusFrame? {
             return IBusFrame(
