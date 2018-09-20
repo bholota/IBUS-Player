@@ -1,5 +1,6 @@
 package com.bholota.ibus
 
+import com.bholota.ibus.frame.RawFrame
 import org.junit.Test
 
 class IBusParserTest {

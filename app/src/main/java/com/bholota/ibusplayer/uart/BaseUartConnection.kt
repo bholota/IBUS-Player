@@ -59,7 +59,7 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
     }
 
     private fun createWriterThread(): Thread = thread(start = true) {
-        val waitTime = 150L //ms
+        val waitTime = 50L //ms
         try {
             while (true) {
                 val now = Date().time

@@ -38,7 +38,7 @@ enum class IBusDevice(val code: Byte) {
     TV(0xBB.toByte()),
     LCM(0xBF.toByte()),
     MID(0xC0.toByte()),
-    Telephone(0xC8.toByte()),
+    Phone(0xC8.toByte()),
     LKM(0xD0.toByte()),
     CUSTOM1(0xD7.toByte()),
     CUSTOM2(0xD8.toByte()),
@@ -46,10 +46,10 @@ enum class IBusDevice(val code: Byte) {
     IRIS(0xE0.toByte()),
     OBC(0xE7.toByte()),
     ISP(0xE8.toByte()),
-    Lights(0xED.toByte()),
-    BordmonitorButtons(0xF0.toByte()),
+    MemorySeats(0xED.toByte()),
+    BoardMonitorButtons(0xF0.toByte()),
     CSU(0xF5.toByte()),
-    BLOC(0xFF.toByte());
+    Broadcast2(0xFF.toByte());
 
     companion object {
         fun fromByte(value: Byte): IBusDevice? {
