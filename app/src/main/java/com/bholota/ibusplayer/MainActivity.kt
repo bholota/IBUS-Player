@@ -5,9 +5,10 @@ import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bholota.ibus.IBusDevice
+import com.bholota.ibus.IBusPacketRouter
 import com.bholota.ibus.IBusParser
 import com.bholota.ibus.frame.IBusFrame
-import com.bholota.ibusplayer.uart.BaseUartConnection
+import com.bholota.ibusplayer.uart.AndroidUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
 import kotlin.concurrent.thread
@@ -22,34 +23,21 @@ import kotlin.concurrent.thread
  */
 class MainActivity : AppCompatActivity() {
 
+    init {
+        com.bholota.ibus.L.log = { log.d(it) }
+    }
+
     private val log = L("MainActivity")
     lateinit var logsView: TextView
     lateinit var packetView: TextView
 
-    var logText = StringBuffer()
-    var packetText = StringBuffer()
-    val parser = IBusParser()
+    private var logText = StringBuffer()
+    private var packetText = StringBuffer()
 
-    private var ibusUart = BaseUartConnection { data ->
-
-        val packetString = data.joinToString { String.format("%02X", (it.toInt() and 0xFF)) }
-
-        logText.append(packetString)
-        logText.append('\n')
-
-        runOnUiThread {
-            logsView.text = logText.toString()
-        }
-        // parse
-        val packets = parser.push(data)
-        packets.forEach {
-            log.w("<-- Packet: $it")
-            packetText.append(it).append('\n')
-        }
-
-        runOnUiThread {
-            packetView.text = packetText.toString()
-        }
+    private val parser = IBusParser()
+    private val router = IBusPacketRouter()
+    private var ibusUart = AndroidUartConnection { connection, data ->
+        parser.push(data).forEach { router.routePacket(connection, IBusFrame.fromRaw(it)) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

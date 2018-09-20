@@ -1,5 +1,6 @@
 package com.bholota.ibusplayer.uart
 
+import com.bholota.ibus.UartConnection
 import com.bholota.ibusplayer.utils.L
 import com.google.android.things.pio.PeripheralManager
 import com.google.android.things.pio.UartDevice
@@ -8,9 +9,9 @@ import java.io.IOException
 import java.util.*
 import kotlin.concurrent.thread
 
-class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartConnection {
+class AndroidUartConnection(override val dataListener: (UartConnection, ByteArray) -> Unit) : UartConnection {
 
-    private val log = L("BaseUartConnection")
+    private val log = L("AndroidUartConnection")
     private var lastReadTime = 0L
     private var uartDevice: UartDevice? = null
     private var writerQueue = ArrayList<ByteArray>()
@@ -25,7 +26,7 @@ class BaseUartConnection(override val dataListener: (ByteArray) -> Unit) : UartC
 
         override fun onUartDeviceDataAvailable(uart: UartDevice?): Boolean {
             try {
-                dataListener(readData())
+                dataListener(this@AndroidUartConnection, readData())
             } catch (e: IOException) {
                 log.w("Unable to access UART device", e)
             }

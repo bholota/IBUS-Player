@@ -7,7 +7,6 @@ import kotlin.experimental.xor
 class IBusParser {
 
     private val buffer = ArrayList<Byte>() // contains unprocessed data
-    var log: (msg: String) -> Unit = {}
 
     @Synchronized
     fun push(data: ByteArray): List<RawFrame> {
@@ -20,7 +19,7 @@ class IBusParser {
             if (buffer.size > MAX_BUFFER_LEN) {
                 // if this scenario occurs too often it should be handled by removing 1,2,3,4 etc.
                 // bytes from begging of the buffer to remove a garbage and retry parsing
-                log("Buffer filled out, clearing...")
+                L.log("Buffer filled out, clearing...")
                 buffer.clear()
                 return result
             }
@@ -41,7 +40,7 @@ class IBusParser {
             if (isFrameValid(frame)) {
                 result += frame
             } else {
-                log("Invalid frame: $frame")
+                L.log("Invalid frame: $frame")
             }
             buffer.subList(0, 2 + len).clear() // remove processed data from buffer
         }

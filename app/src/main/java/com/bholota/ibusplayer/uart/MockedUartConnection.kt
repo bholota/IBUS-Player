@@ -1,8 +1,9 @@
 package com.bholota.ibusplayer.uart
 
 import com.bholota.ibus.IBusDebugData
+import com.bholota.ibus.UartConnection
 
-class MockedUartConnection(override val dataListener: (ByteArray) -> Unit) : UartConnection {
+class MockedUartConnection(override val dataListener: (UartConnection, ByteArray) -> Unit) : UartConnection {
 
     override val devicesList: List<String> = listOf("DEBUG_DEVICE")
 
@@ -19,7 +20,7 @@ class MockedUartConnection(override val dataListener: (ByteArray) -> Unit) : Uar
             try {
                 while (true) {
                     val frame = packets[position % packets.size]
-                    dataListener(frame.map { (it and 0xFF).toByte() }.toByteArray())
+                    dataListener(this, frame.map { (it and 0xFF).toByte() }.toByteArray())
                     Thread.sleep(1000)
                     position++
                 }

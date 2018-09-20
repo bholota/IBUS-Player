@@ -45,7 +45,7 @@ class IBusFrame(val src: IBusDevice, val dst: IBusDevice, val data: List<Byte>) 
     }
 
     companion object {
-        fun fromRaw(rawFrame: RawFrame): IBusFrame? {
+        fun fromRaw(rawFrame: RawFrame): IBusFrame {
             return IBusFrame(
                     IBusDevice.fromByte(rawFrame.src)!!,
                     IBusDevice.fromByte(rawFrame.dst)!!,
