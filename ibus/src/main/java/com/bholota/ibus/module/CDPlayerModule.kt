@@ -11,15 +11,15 @@ import com.bholota.ibus.frame.IBusFrame
  */
 class CDPlayerModule : IBusModule() {
 
-    private val midToCdPooling = IBusFrame(IBusDevice.MID, IBusDevice.CDPlayer, listOf(0x1))
+    private val midToCdPooling = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x1))
 
-    //private val cdToMidPoolingResponse = IBusFrame(IBusDevice.CDPlayer, )
+    private val cdToMidPoolingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x0))
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
         L.log("CDPlayerModule --> onRequest: $frame")
 
         when(frame) {
-            //midToCdPooling -> connection.writeData(cdToMidPoolingResponse.toByteArray())
+            midToCdPooling -> connection.writeData(cdToMidPoolingResponse.toByteArray())
         }
     }
 
