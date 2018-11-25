@@ -1,7 +1,6 @@
 package com.bholota.ibus
 
 import com.bholota.ibus.frame.RawFrame
-import java.lang.RuntimeException
 import kotlin.experimental.xor
 
 class IBusParser {
@@ -26,7 +25,10 @@ class IBusParser {
             val src = buffer[0]
             val len = buffer[1]
 
-            if (len < 3) throw RuntimeException("Packet cannot be parsed!") // todo: support for short packets
+            if (len < 3) {
+                L.log("Buffer contains $buffer")
+                throw RuntimeException("Packet cannot be parsed!")
+            } // todo: support for short packets
 
             // len suggest that we have to wait for more data
             if (buffer.size < (2 + len)) return result // 2 because (src + len)

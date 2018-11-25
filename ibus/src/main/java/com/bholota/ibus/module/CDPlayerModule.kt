@@ -4,6 +4,7 @@ import com.bholota.ibus.IBusDevice
 import com.bholota.ibus.L
 import com.bholota.ibus.UartConnection
 import com.bholota.ibus.frame.IBusFrame
+import com.bholota.ibus.prettyHex
 
 /**
  * 1. every 30s announce until first pool listOf(0x2, 0x1)
@@ -19,7 +20,7 @@ class CDPlayerModule : IBusModule() {
     private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1))
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
-        L.log("CDPlayerModule --> onRequest: $frame")
+        L.log("CDPlayerModule <-- onRequest: ${frame.toByteArray().prettyHex()}")
 
         when(frame) {
             cdPoolingRequest -> connection.writeData(cdPoolingResponse.toByteArray())
@@ -28,6 +29,6 @@ class CDPlayerModule : IBusModule() {
     }
 
     override fun onResponse(connection: UartConnection, frame: IBusFrame) {
-        L.log("CDPlayerModule <-- onResponse: $frame")
+        L.log("CDPlayerModule --> onResponse: ${frame.toByteArray().prettyHex()}")
     }
 }
