@@ -1,6 +1,7 @@
 package com.bholota.ibus
 
 import com.bholota.ibus.frame.RawFrame
+import java.lang.IllegalStateException
 import kotlin.experimental.xor
 
 class IBusParser {
@@ -12,6 +13,7 @@ class IBusParser {
         buffer.addAll(data.toList())
 
         val result = mutableListOf<RawFrame>() // already parsed packets
+        var badDataDetected = false
 
         while (true) {
             if (buffer.size < MIN_PACKET_LEN) return result // we have to wait for packet data
@@ -26,10 +28,13 @@ class IBusParser {
             val len = buffer[1]
 
             if (len < 3) {
-                L.log("Buffer contains ${buffer.toByteArray().prettyHex()}")
-//                throw RuntimeException("Packet cannot be parsed!")
-                continue
-            } // todo: support for short packets
+                L.log("Bad packet, try to find correct one ${buffer.toByteArray().prettyHex()}")
+                if (buffer.size >= MIN_PACKET_LEN) {
+                    buffer.removeAt(0) // remove first and start again
+                    continue
+                }
+                return result // basically wait for more
+            }
 
             // len suggest that we have to wait for more data
             if (buffer.size < (2 + len)) return result // 2 because (src + len)
@@ -42,10 +47,13 @@ class IBusParser {
 
             if (isFrameValid(frame)) {
                 result += frame
+                buffer.subList(0, 2 + len).clear() // remove processed data from buffer
             } else {
                 L.log("Invalid frame: $frame")
+                if (buffer.size >= MIN_PACKET_LEN) {
+                    buffer.removeAt(0) // remove first and start again
+                }
             }
-            buffer.subList(0, 2 + len).clear() // remove processed data from buffer
         }
     }
 
@@ -59,6 +67,6 @@ class IBusParser {
 
     companion object {
         const val MIN_PACKET_LEN = 5
-        const val MAX_BUFFER_LEN = 20
+        const val MAX_BUFFER_LEN = 64
     }
 }
