@@ -8,7 +8,7 @@ import com.bholota.ibus.module.IBusModule
 class IBusPacketRouter {
 
     private val modules = hashMapOf<IBusDevice, IBusModule>(
-        IBusDevice.CDPlayer to CDPlayerModule()
+            IBusDevice.CDPlayer to CDPlayerModule()
     )
 
     private val defaultModule = DefaultModule()
@@ -16,5 +16,11 @@ class IBusPacketRouter {
     fun routePacket(connection: UartConnection, frame: IBusFrame) {
         (modules[frame.dst] ?: defaultModule).onRequest(connection, frame)
         (modules[frame.src] ?: defaultModule).onResponse(connection, frame)
+    }
+
+    fun initModules(connection: UartConnection) {
+        modules.forEach { _, iBusModule ->
+            iBusModule.onStart(connection)
+        }
     }
 }

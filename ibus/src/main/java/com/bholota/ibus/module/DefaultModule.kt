@@ -5,6 +5,10 @@ import com.bholota.ibus.frame.IBusFrame
 
 class DefaultModule : IBusModule() {
 
+    override fun onStart(connection: UartConnection) {
+
+    }
+
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
 //        L.log("DefaultModule --> onRequest: $frame")
     }
