@@ -15,9 +15,9 @@ class CDPlayerModule : IBusModule() {
     private val cdAnnounce = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x1)) // todo trigger every 30s until first pooling
     private val cdPoolingRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x1))
     private val cdPoolingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x0))
-    private val cdStatusRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x0, 0x0))
-    private val cdPlayingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1))
-    private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1))
+    private val cdStatusRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x0, 0x0)) // Request CD and track info
+    private val cdPlayingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
+    private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
         L.log("CDPlayerModule <-- onRequest: ${frame.toByteArray().prettyHex()}")
