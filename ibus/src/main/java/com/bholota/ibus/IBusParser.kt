@@ -26,8 +26,9 @@ class IBusParser {
             val len = buffer[1]
 
             if (len < 3) {
-                L.log("Buffer contains $buffer")
-                throw RuntimeException("Packet cannot be parsed!")
+                L.log("Buffer contains ${buffer.toByteArray().prettyHex()}")
+//                throw RuntimeException("Packet cannot be parsed!")
+                continue
             } // todo: support for short packets
 
             // len suggest that we have to wait for more data

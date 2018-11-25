@@ -11,6 +11,7 @@ import com.bholota.ibus.frame.IBusFrame
 import com.bholota.ibusplayer.uart.AndroidUartConnection
 import com.bholota.ibusplayer.uart.UartConfig
 import com.bholota.ibusplayer.utils.L
+import kotlin.concurrent.thread
 
 
 /**
@@ -50,6 +51,14 @@ class MainActivity : AppCompatActivity() {
 
         ibusUart.openDevice(UartConfig.DEVICE_NAME)
         ibusUart.writeData(IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x1)).toByteArray())
+
+        thread(start = true) {
+            while (true) {
+                val cdPlayingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
+                ibusUart.writeData(cdPlayingResponse.toByteArray())
+                Thread.sleep(500)
+            }
+        }
 
     }
 
