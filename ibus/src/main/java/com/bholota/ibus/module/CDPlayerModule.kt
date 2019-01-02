@@ -24,9 +24,11 @@ class CDPlayerModule : IBusModule() {
     private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
 
     private var isAnnounced = false
+    private var isPlaying = false
 
     override fun onStart(connection: UartConnection) {
         startAnnounce(connection)
+        startPlaying(connection)
     }
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
@@ -39,6 +41,7 @@ class CDPlayerModule : IBusModule() {
             }
             cdStatusRequest -> connection.writeData(cdPlayingResponse.toByteArray())
             cdPlayRequest -> connection.writeData(cdPlayingResponse.toByteArray())
+            else -> L.log(frame.toByteArray().prettyHex())
         }
     }
 
@@ -51,6 +54,18 @@ class CDPlayerModule : IBusModule() {
             while (!isAnnounced && connection.isOpen()) {
                 connection.writeData(cdAnnounce.toByteArray())
                 Thread.sleep(1000L)
+            }
+        }
+    }
+
+    private fun startPlaying(connection: UartConnection) {
+        if (!isPlaying) {
+            isPlaying = true
+            thread(start=true) {
+                while (isPlaying && connection.isOpen()) {
+                    connection.writeData(cdPlayingResponse.toByteArray())
+                    Thread.sleep(2000L)
+                }
             }
         }
     }

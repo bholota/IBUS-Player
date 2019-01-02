@@ -10,7 +10,7 @@ class DefaultModule : IBusModule() {
     }
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
-//        L.log("DefaultModule --> onRequest: $frame")
+        //L.log("DefaultModule --> onRequest: ${frame.toByteArray().prettyHex()}")
     }
 
     override fun onResponse(connection: UartConnection, frame: IBusFrame) {

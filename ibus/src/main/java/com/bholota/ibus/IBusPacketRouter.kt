@@ -7,8 +7,10 @@ import com.bholota.ibus.module.IBusModule
 
 class IBusPacketRouter {
 
+    val cdPlayerModule = CDPlayerModule()
+
     private val modules = hashMapOf<IBusDevice, IBusModule>(
-            IBusDevice.CDPlayer to CDPlayerModule()
+            IBusDevice.CDPlayer to cdPlayerModule
     )
 
     private val defaultModule = DefaultModule()
