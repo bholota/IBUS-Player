@@ -13,13 +13,43 @@ import kotlin.concurrent.thread
  */
 class CDPlayerModule : IBusModule() {
 
+    /*
+
+        onInit announce every 10 seconds disable on d_cdPoolResponse (triggered when pooling requested first)
+
+
+        d_cdStartPlaying -> pause periodic writes, writeCurrentTrack
+        d_cdSendStatus -> same
+        d_cdPollResponse -> stop announce, stop pool response for 30 seconds and WRITER.writeBusPacket('68', 'c0', ['21', '40', '00', '09', '05', '05', '4D', '50', '53'])
+            1. stop announce
+            2. call pollResponseEvery 30 seconds (maybe more)
+            3. write WRITER.writeBusPacket('68', 'c0', ['21', '40', '00', '09', '05', '05', '4D', '50', '53'])
+
+        def writeCurrentTrack():
+          cdSongHundreds, cdSong = _getTrackNumber()
+          WRITER.writeBusPacket('c8', '80', ['23', '42', '32', '1e']) #clear IKEConsole LCD of messages before filling it with MPD info
+          WRITER.writeBusPacket('18', '68', ['39', '02', '09', '00', '3F', '00', cdSongHundreds, cdSong])
+
+        def pollResponse():
+            WRITER.writeBusPacket('18', 'FF', ['02','00'])
+
+        def announce():
+          WRITER.writeBusPacket('18', 'FF', ['02', '01'])
+
+     */
+
     // handled packets:
 
     private val cdAnnounce = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x1)) // todo trigger every 30s until first pooling
-    private val cdPoolingRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x1))
+    private val cdPoolingRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x1)) // d_cdPollResponse
     private val cdPoolingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x0))
-    private val cdStatusRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x0, 0x0)) // Request CD and track info
-    private val cdPlayRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x3, 0x0))
+
+    private val cdPoolingRequest2 = IBusFrame(IBusDevice.MFL, IBusDevice.Phone, listOf(0x1)) // d_cdPollResponse
+    private val cdReset = IBusFrame(IBusDevice.MFL, IBusDevice.Phone, listOf(0x3B, 0x40)) // d_cdPollResponse
+
+    private val cdStatusRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x0, 0x0))//d_cdSendStatus // Request CD and track info
+    private val cdPlayRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x3, 0x0)) //d_cdStartPlaying
+
     private val cdPlayingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
     private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
 
@@ -53,7 +83,7 @@ class CDPlayerModule : IBusModule() {
         thread(start = true) {
             while (!isAnnounced && connection.isOpen()) {
                 connection.writeData(cdAnnounce.toByteArray())
-                Thread.sleep(1000L)
+                Thread.sleep(1000L) // try announce with bigger interval
             }
         }
     }
