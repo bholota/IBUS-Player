@@ -43,6 +43,7 @@ class CDPlayerModule : IBusModule() {
     private val cdAnnounce = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x1)) // todo trigger every 30s until first pooling
     private val cdPoolingRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x1)) // d_cdPollResponse
     private val cdPoolingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Broadcast2, listOf(0x2, 0x0))
+    private val cdPoolingResponse2 = IBusFrame(IBusDevice.Radio, IBusDevice.MID, listOf(0x21, 0x40, 0x0, 0x9, 0x5, 0x5, 0x4d, 0x50, 0x53))
 
     private val cdPoolingRequest2 = IBusFrame(IBusDevice.MFL, IBusDevice.Phone, listOf(0x1)) // d_cdPollResponse
     private val cdReset = IBusFrame(IBusDevice.MFL, IBusDevice.Phone, listOf(0x3B, 0x40)) // d_cdPollResponse
@@ -51,6 +52,9 @@ class CDPlayerModule : IBusModule() {
     private val cdPlayRequest = IBusFrame(IBusDevice.Radio, IBusDevice.CDPlayer, listOf(0x38, 0x3, 0x0)) //d_cdStartPlaying
 
     private val cdPlayingResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
+
+    private val cdTrackInfoResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x2, 0x9, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
+
     private val cdStoppedResponse = IBusFrame(IBusDevice.CDPlayer, IBusDevice.Radio, listOf(0x39, 0x0, 0x2, 0x0, 0x3f, 0x0, /*disk index 1-6*/0x1, /*track index*/0x1))
 
     private var isAnnounced = false
@@ -65,12 +69,12 @@ class CDPlayerModule : IBusModule() {
         L.log("CDPlayerModule <-- onRequest: ${frame.toByteArray().prettyHex()}")
 
         when(frame) {
-            cdPoolingRequest -> {
+            cdPoolingRequest, cdPoolingRequest2 -> {
                 isAnnounced = true
-                connection.writeData(cdPoolingResponse.toByteArray())
+                connection.writeData(cdPoolingResponse2.toByteArray())
             }
-            cdStatusRequest -> connection.writeData(cdPlayingResponse.toByteArray())
-            cdPlayRequest -> connection.writeData(cdPlayingResponse.toByteArray())
+            cdStatusRequest -> connection.writeData(cdTrackInfoResponse.toByteArray())
+            cdPlayRequest -> connection.writeData(cdTrackInfoResponse.toByteArray())
             else -> L.log(frame.toByteArray().prettyHex())
         }
     }
@@ -93,7 +97,7 @@ class CDPlayerModule : IBusModule() {
             isPlaying = true
             thread(start=true) {
                 while (isPlaying && connection.isOpen()) {
-                    connection.writeData(cdPlayingResponse.toByteArray())
+                    connection.writeData(cdPoolingResponse2.toByteArray())
                     Thread.sleep(2000L)
                 }
             }
