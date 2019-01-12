@@ -1,7 +1,6 @@
 package com.bholota.ibus
 
 import com.bholota.ibus.frame.RawFrame
-import java.lang.IllegalStateException
 import kotlin.experimental.xor
 
 class IBusParser {
