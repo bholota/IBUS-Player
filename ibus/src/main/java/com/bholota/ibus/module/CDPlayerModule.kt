@@ -62,7 +62,7 @@ class CDPlayerModule : IBusModule() {
 
     override fun onStart(connection: UartConnection) {
         startAnnounce(connection)
-        startPlaying(connection)
+//        startPlaying(connection)
     }
 
     override fun onRequest(connection: UartConnection, frame: IBusFrame) {
@@ -71,7 +71,8 @@ class CDPlayerModule : IBusModule() {
         when(frame) {
             cdPoolingRequest, cdPoolingRequest2 -> {
                 isAnnounced = true
-                connection.writeData(cdPoolingResponse2.toByteArray())
+                connection.writeData(cdPoolingResponse.toByteArray())
+                connection.writeData(cdTrackInfoResponse.toByteArray())
             }
             cdStatusRequest -> connection.writeData(cdTrackInfoResponse.toByteArray())
             cdPlayRequest -> connection.writeData(cdTrackInfoResponse.toByteArray())
@@ -92,15 +93,15 @@ class CDPlayerModule : IBusModule() {
         }
     }
 
-    private fun startPlaying(connection: UartConnection) {
-        if (!isPlaying) {
-            isPlaying = true
-            thread(start=true) {
-                while (isPlaying && connection.isOpen()) {
-                    connection.writeData(cdPoolingResponse2.toByteArray())
-                    Thread.sleep(2000L)
-                }
-            }
-        }
-    }
+//    private fun startPlaying(connection: UartConnection) {
+//        if (!isPlaying) {
+//            isPlaying = true
+//            thread(start=true) {
+//                while (isPlaying && connection.isOpen()) {
+//                    //connection.writeData(cdTrackInfoResponse.toByteArray())
+//                    Thread.sleep(5000L)
+//                }
+//            }
+//        }
+//    }
 }
