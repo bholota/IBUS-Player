@@ -1,9 +1,11 @@
 package com.bholota.ibusplayer
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bholota.bluetooth.A2dpSinkActivity
 import com.bholota.ibus.IBusPacketRouter
 import com.bholota.ibus.IBusParser
 import com.bholota.ibus.frame.IBusFrame
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 //                Thread.sleep(500)
 //            }
 //        }
-
+//        startActivity(Intent(this, A2dpSinkActivity::class.java))
     }
 
     override fun onDestroy() {

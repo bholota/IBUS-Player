@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">bluetooth</string>
+    <string name="error_bluetooth_not_present">Bluetooth adapter not available</string>
+</resources>

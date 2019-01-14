@@ -39,7 +39,7 @@ class IBusParser {
             if (buffer.size < (2 + len)) return result // 2 because (src + len)
 
             val dst = buffer[2]
-            val data = buffer.subList(3, 1 + len).toList()
+            val data = buffer.subList(3, 1 + len).toList() // data starts at 3rd pos
             val checkSum = buffer[1 + len]
 
             val frame = RawFrame(src, len, dst, data.toList(), checkSum)
