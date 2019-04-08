@@ -2,13 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bholota.ibusplayer">
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-    <uses-permission android:name="com.google.android.things.permission.MANAGE_INPUT_DRIVERS" />
-    <uses-permission android:name="com.google.android.things.permission.MANAGE_BLUETOOTH" />
-    <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library android:name="com.google.android.things" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,19 +16,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!--
-  Uncomment the following intent filter block to enable this activity to
-  launch automatically on boot, and re-launch if the app terminates.
--->
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </activity>
+        <uses-library android:name="com.google.android.things" />
     </application>
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <uses-permission android:name="com.google.android.things.permission.MANAGE_INPUT_DRIVERS" />
+    <uses-permission android:name="com.google.android.things.permission.MANAGE_BLUETOOTH" />
+    <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
 </manifest>

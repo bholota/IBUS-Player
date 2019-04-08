@@ -1,6 +1,5 @@
 package com.bholota.ibusplayer
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
@@ -21,7 +20,7 @@ import com.bholota.ibusplayer.utils.L
  *
  * More info here: https://developer.android.com/things/sdk/pio/uart
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : A2dpSinkActivity() {
 
     init {
         com.bholota.ibus.L.log = { log.d(it) }
