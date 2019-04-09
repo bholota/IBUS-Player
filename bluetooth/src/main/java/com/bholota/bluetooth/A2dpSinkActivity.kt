@@ -21,7 +21,7 @@ open class A2dpSinkActivity : AppCompatActivity() {
             return
         }
 
-        this.tls = Tls(this)
+        this.tls = Tls(this, this)
         this.model = ViewModelProviders.of(this).get(A2dpSinkViewModel::class.java)
         this.tls.speak(getString(R.string.bluetooth_init_intro))
         this.a2dpSink = A2dpSink(this, tls)

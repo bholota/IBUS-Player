@@ -9,8 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.things.bluetooth.BluetoothProfileManager
 import java.lang.reflect.InvocationTargetException
@@ -19,10 +21,14 @@ import java.util.*
 /**
  * Just kotlin version of com.example.androidthings.bluetooth.audio from sample-bluetooth-audio
  */
-class A2dpSink(private val activity: Activity, private val tls: Tls) {
+class A2dpSink(private val activity: AppCompatActivity, private val tls: Tls) : LifecycleObserver {
 
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var a2DPSinkProxy: BluetoothProfile
+
+    init {
+        activity.lifecycle.addObserver(this)
+    }
 
     private val adapterStateChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

@@ -4,18 +4,21 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import java.util.*
 
-class Tls(context: Context): LifecycleObserver {
+class Tls(owner: LifecycleOwner, context: Context): LifecycleObserver {
 
-    private val engine: TextToSpeech = TextToSpeech(context) { status -> init(status) }
+    private val engine: TextToSpeech = TextToSpeech(context) { status -> afterInitCallback(status) }
     private var isInitialized = false
-
     private val beforeInitQueue = mutableListOf<String>()
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private fun init(status: Int) {
+    init {
+        owner.lifecycle.addObserver(this)
+    }
+
+    private fun afterInitCallback(status: Int) {
         when (status) {
             TextToSpeech.SUCCESS -> {
                 engine.language = Locale.US
